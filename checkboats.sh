@@ -1,6 +1,6 @@
 #!/bin/sh
-DEPARTING=Provincetown # 'Boston' or 'Provincetown'
-DATE=2022-09-20
+DEPARTING=Boston # 'Boston' or 'Provincetown'
+DATE=2022-09-24
 ADULTS=1
 SENIORS=0
 CHILDREN=0
@@ -8,7 +8,7 @@ BABIES=0
 BIKES=0
 LINK="https://secure.baystatecruisecompany.com/reserve"
 
-WEBPAGE="$( curl -GLsc- -w "%{url}\n" "$LINK" \
+WEBPAGE="$( curl -GLsc- -w"%{url}\n" "$LINK" \
 --data-urlencode trip_info="ferry|ow|$DEPARTING" \
 --data-urlencode departure_date="$DATE" \
 --data-urlencode adults="$ADULTS" \
@@ -19,16 +19,11 @@ WEBPAGE="$( curl -GLsc- -w "%{url}\n" "$LINK" \
 --data-urlencode submit="See+available+trips" \
 )"
 
-#curl -c- -LGso /dev/null -w "%{url}\n\n" "$LINK" --data-urlencode departure_date="$DATE" --data-urlencode adults="$ADULTS"
-
-FERRIES="$( echo "$WEBPAGE"  |  grep "Fast Ferry,\|secure.baystatecruisecompany.com/reserve?" )"
-MESSAGE="$( echo "$FERRIES" | sed 's/<[^>]*>//g' | awk 1 ORS='\n\n' )"
+MESSAGE="$( echo "$WEBPAGE" | grep --group-separator="<br><br>" -C0 "Fast Ferry,\|/reserve?" | html2text -width 999 )"
 KEY="$2" # You can put your key here but don't save it to a git repo
 PHONE="$1"
 
-#echo "$FERRIES"
-#echo "$WEBPAGE"
-#echo "$LINK"
 echo "$MESSAGE"
+# can we use diff instead of md5sum
 #echo -e "$MESSAGE" | md5sum -c boats.md5 || curl -X POST https://textbelt.com/text --data-urlencode phone="$PHONE" --data-urlencode message="$MESSAGE" -d key="$KEY" && echo -e "$MESSAGE" | md5sum > boats.md5
 
