@@ -20,15 +20,18 @@ WEBPAGE="$( curl -GLsc- -w"%{url}\n" "$LINK" \
   --data-urlencode submit="See+available+trips" \
 )"
 
-MESSAGE="$( echo "$WEBPAGE" | grep --group-separator="<br><br>" -C0 "Fast Ferry,\|/reserve?" | html2text -width 999 )"
+MESSAGE="$( echo "$WEBPAGE" \
+  | grep --group-separator="<br><br>" -C0 "Fast Ferry,\|/reserve?" \
+  | html2text -width 999 \
+)"
 KEY="$2" # You can put your key here but don't save it to a git repo
 PHONE="$1"
 
-echo "$MESSAGE"
-cmp -s <( echo "$MESSAGE" ) message || ( curl -X POST https://textbelt.com/text \
-  --data-urlencode phone="$PHONE" \
-  --data-urlencode message="$MESSAGE" \
-  -d key="$KEY" \
-  && echo "$MESSAGE" > message
-)
+cmp -s <( echo "$MESSAGE" ) message \
+  || ( curl -X POST https://textbelt.com/text \
+      --data-urlencode phone="$PHONE" \
+      --data-urlencode message="$MESSAGE" \
+      -d key="$KEY" \
+    && echo "$MESSAGE" > message
+  )
 
