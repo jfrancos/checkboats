@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 DEPARTING=Boston # 'Boston' or 'Provincetown'
 DATE=2022-09-24
